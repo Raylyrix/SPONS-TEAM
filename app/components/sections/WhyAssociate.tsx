@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
 
 const benefits = [
@@ -64,23 +64,11 @@ const benefits = [
     color: 'from-black/20 to-red-900/20',
     borderColor: 'border-red-500/30',
   },
-  {
-    number: 75,
-    suffix: ' Years',
-    title: 'Legacy of Excellence',
-    description: 'IIT Kharagpur heritage',
-    comparison: 'Oldest IIT tech festival',
-    context: ['Established 1951', 'Institutional backing', 'Proven track record'],
-    color: 'from-red-800/20 to-red-700/20',
-    borderColor: 'border-red-700/30',
-  },
 ];
 
 interface BenefitCardProps {
   benefit: typeof benefits[0];
   index: number;
-  total: number;
-  scrollYProgress: import('framer-motion').MotionValue<number>;
 }
 
 function AnimatedCounter({ targetValue, suffix, start }: { targetValue: number, suffix: string, start: boolean }) {
@@ -112,193 +100,216 @@ function AnimatedCounter({ targetValue, suffix, start }: { targetValue: number, 
   return <span>{value.toLocaleString()}{suffix}</span>;
 }
 
-function BenefitCard({ benefit, index, total, scrollYProgress }: BenefitCardProps) {
+function BenefitCard({ benefit, index }: BenefitCardProps) {
   const [startCounter, setStartCounter] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
-
-  // Start animation earlier - when card is about to enter viewport
-  const start = (index - 0.5) / total;
-  const end = (index + 0.2) / total;
-  
-  const scale = useTransform(scrollYProgress, [start, end], [0.9, 1], { clamp: true });
-  const opacity = useTransform(scrollYProgress, [start, end], [0.5, 1], { clamp: true });
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setStartCounter(true);
+          if (cardRef.current) observer.unobserve(cardRef.current);
         }
       },
-      { threshold: 0.7 }
+      { threshold: 0.1, rootMargin: '0px 0px -10% 0px' }
     );
 
     const currentRef = cardRef.current;
-    if (currentRef) {
-      observer.observe(currentRef);
-    }
+    if (currentRef) observer.observe(currentRef);
 
     return () => {
-      if (currentRef) {
-        observer.unobserve(currentRef);
-      }
+      if (currentRef) observer.unobserve(currentRef);
     };
   }, []);
 
   return (
     <motion.div
       ref={cardRef}
-      style={{
-        scale,
-        opacity,
-        position: 'sticky',
-        top: 0,
-        width: '100%',
-        height: '135vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 100 - index,
+      initial={{ opacity: 0, y: 50, scale: 0.95 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: false, amount: 0.2, margin: '0px 0px -50px 0px' }}
+      transition={{
+        duration: 0.6,
+        delay: index * 0.08,
+        ease: [0.25, 0.46, 0.45, 0.94],
       }}
-      className="px-6"
+      className="h-full"
     >
-      <div className="max-w-6xl mx-auto w-full">
-        <div className={`relative rounded-3xl p-12 md:p-16 border-2 ${benefit.borderColor} bg-gradient-to-br ${benefit.color} backdrop-blur-md shadow-2xl`} style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}>
-          
-          {/* Top Bar - Progress */}
-          <div className="flex items-center justify-between mb-12">
-            <div className="px-4 py-2 bg-gradient-to-r from-red-500/20 to-red-600/20 border border-red-500/50 rounded-full">
-              <span className="text-sm font-bold text-red-400">{index + 1}/{total}</span>
-            </div>
-            
-            {/* Mini Progress Bar */}
-            <div className="flex items-center gap-2">
-              {Array.from({ length: total }).map((_, i) => (
-                <div
-                  key={i}
-                  className={`h-1 rounded-full transition-all duration-500 ${
-                    i <= index ? 'bg-red-500 w-8' : 'bg-white/20 w-2'
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Main Content */}
-          <div className="max-w-4xl mx-auto text-center">
-            
-            {/* The Number */}
-            <div className="mb-8">
-              <div className="text-6xl md:text-8xl lg:text-9xl font-black text-white mb-4 leading-none tracking-tighter">
+      <motion.div 
+        className={`relative rounded-2xl p-6 md:p-8 border-2 ${benefit.borderColor} bg-black/60 backdrop-blur-md shadow-xl bg-gradient-to-br ${benefit.color} h-full flex flex-col`} 
+        style={{ boxShadow: '0 20px 40px -12px rgba(220, 38, 38, 0.3)' }}
+        whileHover={{ scale: 1.03, boxShadow: '0 25px 50px -12px rgba(220, 38, 38, 0.4)' }}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+      >
+          {/* Main Content - Vertical Layout */}
+          <div className="flex flex-col flex-grow">
+            {/* Big Number */}
+            <motion.div
+              className="mb-4"
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: index * 0.08 + 0.2, type: 'spring', stiffness: 120 }}
+            >
+              <motion.p 
+                className="text-[10px] md:text-xs tracking-widest text-red-400/80 uppercase mb-2"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: index * 0.08 + 0.15 }}
+              >
+                Impact Metric
+              </motion.p>
+              <div className="text-4xl md:text-5xl lg:text-6xl font-black text-white leading-none tracking-tight mb-3">
                 <AnimatedCounter targetValue={benefit.number} suffix={benefit.suffix} start={startCounter} />
               </div>
-              
-              <div className="inline-block px-4 py-2 bg-red-500/20 border border-red-500/50 rounded-full mb-6">
-                <span className="text-xs font-semibold text-red-400 uppercase tracking-widest">
-                  {benefit.title}
-                </span>
-              </div>
-            </div>
+              <motion.div 
+                className="inline-block px-2 py-1 md:px-3 md:py-1.5 bg-red-500/15 border border-red-500/40 rounded-full mb-3"
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.08 + 0.3 }}
+              >
+                <span className="text-[9px] md:text-[10px] font-semibold text-red-300 uppercase tracking-widest">{benefit.title}</span>
+              </motion.div>
 
-            <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-6 leading-tight">
-              {benefit.description}
-            </h3>
-
-            {/* Comparison Data */}
-            <div className="mb-8">
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
-                <span className="text-sm font-bold text-red-400 uppercase tracking-wider">
+              {/* Comparison */}
+              <motion.div 
+                className="mb-4"
+                initial={{ opacity: 0, x: -15 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.08 + 0.4 }}
+              >
+                <span className="inline-flex items-center gap-2 text-sm md:text-base lg:text-lg font-bold text-red-300">
+                  <svg className="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M5 10l4 4 6-8" /></svg>
                   {benefit.comparison}
                 </span>
-                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
 
-            {/* Context Bullets */}
-            <div className="flex flex-wrap justify-center gap-4 text-sm text-white/70">
-              {benefit.context.map((item, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <div className="w-1 h-1 rounded-full bg-red-400"></div>
-                  <span>{item}</span>
-                </div>
-              ))}
-            </div>
+            {/* Description and Context */}
+            <div className="flex-grow flex flex-col">
+              <motion.h3 
+                className="text-lg md:text-xl lg:text-2xl font-bold text-white leading-tight mb-3"
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.08 + 0.5 }}
+              >
+                {benefit.description}
+              </motion.h3>
+              <motion.p 
+                className="text-white/70 text-xs md:text-sm mb-4 flex-grow leading-relaxed"
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.08 + 0.6 }}
+              >
+                Partner with us to leverage a <span className="text-red-400 font-semibold">high-engagement platform</span> built over <span className="text-red-400 font-semibold">years of trust</span>, <span className="text-red-400 font-semibold">scale</span>, and <span className="text-red-400 font-semibold">consistent delivery</span>.
+              </motion.p>
 
-            {/* Mini Chart/Visualization */}
-            <div className="mt-12">
-              <div className="bg-white/5 rounded-xl p-6 border border-white/10">
-                <div className="flex items-end justify-center gap-2 h-20">
-                  <div className="bg-gradient-to-t from-red-600 to-red-400 rounded-t-sm w-8 h-[20%]" />
-                  <div className="bg-gradient-to-t from-red-600 to-red-400 rounded-t-sm w-8 h-[35%]" />
-                  <div className="bg-gradient-to-t from-red-600 to-red-400 rounded-t-sm w-8 h-[50%]" />
-                  <div className="bg-gradient-to-t from-red-600 to-red-400 rounded-t-sm w-8 h-[65%]" />
-                  <div className="bg-gradient-to-t from-red-600 to-red-400 rounded-t-sm w-8 h-[80%]" />
-                  <div className="bg-gradient-to-t from-red-600 to-red-400 rounded-t-sm w-8 h-[90%]" />
-                  <div className="bg-gradient-to-t from-red-600 to-red-400 rounded-t-sm w-8 h-full" />
-                </div>
-                <p className="text-xs text-white/50 mt-4 text-center">Growth trajectory (last 7 years)</p>
-              </div>
+              {/* Context bullets */}
+              <motion.div 
+                className="grid grid-cols-1 gap-2 text-xs text-white/70"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.08 + 0.7 }}
+              >
+                {benefit.context.map((item, i) => (
+                  <motion.div 
+                    key={i} 
+                    className="flex items-center gap-2"
+                    initial={{ opacity: 0, x: -15 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: index * 0.08 + 0.8 + i * 0.08 }}
+                  >
+                    <div className="w-1 h-1 rounded-full bg-red-400"></div>
+                    <span>{item}</span>
+                  </motion.div>
+                ))}
+              </motion.div>
             </div>
-
           </div>
 
-          {/* Subtle Pattern Overlay */}
-          <div className="absolute inset-0 opacity-5 pointer-events-none overflow-hidden rounded-3xl">
-            <div className="absolute inset-0" style={{
-              backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(220,38,38,0.15) 1px, transparent 0)',
-              backgroundSize: '40px 40px'
-            }} />
+          {/* Pattern overlay */}
+          <div className="absolute inset-0 opacity-5 pointer-events-none overflow-hidden rounded-2xl">
+            <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(220,38,38,0.15) 1px, transparent 0)', backgroundSize: '40px 40px' }} />
           </div>
-        </div>
-      </div>
+        </motion.div>
     </motion.div>
   );
 }
 
 export default function WhyAssociate() {
+  const sectionRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ['start start', 'end start'],
-  });
+
+  // Force section visibility
+  useEffect(() => {
+    if (sectionRef.current) {
+      sectionRef.current.style.opacity = '1';
+      sectionRef.current.style.pointerEvents = 'auto';
+      sectionRef.current.style.visibility = 'visible';
+      
+      const parent = sectionRef.current.parentElement;
+      if (parent) {
+        parent.style.opacity = '1';
+        parent.style.pointerEvents = 'auto';
+        parent.style.visibility = 'visible';
+      }
+    }
+  }, []);
 
   return (
-    <section id="why-associate" className="relative w-full overflow-hidden">
-      <div className="absolute inset-0 bg-black/50" />
+    <section 
+      id="why-associate" 
+      ref={sectionRef}
+      className="relative w-full bg-black py-16 md:py-20" 
+      style={{ 
+        zIndex: 10, 
+        position: 'relative',
+        opacity: 1,
+        visibility: 'visible',
+        pointerEvents: 'auto'
+      }}
+    >
+      <div className="absolute inset-0 bg-gradient-to-b from-black via-gray-900 to-black" style={{ zIndex: 0 }} />
       
-      <div className="relative z-10">
+      <div className="relative w-full" style={{ zIndex: 10 }}>
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center py-16 md:py-24 px-6"
+          className="text-center py-12 md:py-16 px-6"
         >
           <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6">
             WHY ASSOCIATE
           </h2>
           <p className="text-lg md:text-xl text-white/60 max-w-3xl mx-auto">
-            Seven data-driven reasons to partner with India&apos;s premier techno-management festival
+            Six data-driven reasons to partner with India&apos;s premier techno-management festival
           </p>
         </motion.div>
 
-        {/* Sticky Scroll Stack */}
+        {/* 3x2 Grid Layout */}
         <div 
           ref={containerRef}
-          className="relative w-full"
-          style={{ minHeight: `${benefits.length * 135}vh` }}
+          className="relative w-full max-w-7xl mx-auto px-6 pb-16"
         >
-          {benefits.map((benefit, index) => (
-            <BenefitCard
-              key={index}
-              benefit={benefit}
-              index={index}
-              total={benefits.length}
-              scrollYProgress={scrollYProgress}
-            />
-          ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            {benefits.map((benefit, index) => (
+              <BenefitCard
+                key={index}
+                benefit={benefit}
+                index={index}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>

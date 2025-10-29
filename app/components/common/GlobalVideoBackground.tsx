@@ -1,9 +1,35 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 
 export default function GlobalVideoBackground() {
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Optimize video playback
+    video.setAttribute('preload', 'metadata');
+    video.setAttribute('playsinline', 'true');
+    
+    // Pause video when tab is not visible
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        video.pause();
+      } else {
+        video.play().catch(() => {
+          // Ignore autoplay errors
+        });
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
 
   return (
     <div className="fixed inset-0 w-full h-full -z-10 pointer-events-none">
@@ -13,8 +39,12 @@ export default function GlobalVideoBackground() {
         loop
         muted
         playsInline
+        preload="metadata"
         className="w-full h-full object-cover"
-        style={{ filter: 'brightness(1)' }}
+        style={{ 
+          filter: 'brightness(1)',
+          willChange: 'transform',
+        }}
       >
         <source src="/2022395-hd_1920_1080_30fps.mp4" type="video/mp4" />
       </video>
@@ -23,5 +53,3 @@ export default function GlobalVideoBackground() {
     </div>
   );
 }
-
-

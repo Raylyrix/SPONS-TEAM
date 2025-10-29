@@ -1,45 +1,93 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
 import Lenis from 'lenis';
-import Hero from '@/components/sections/Hero';
-import WhoAreWe from '@/components/sections/WhoAreWe';
-import WhyAssociate from '@/components/sections/WhyAssociate';
-import SeventyFiveYears from '@/components/sections/SeventyFiveYears';
-import Events from '@/components/sections/FlagshipEvents';
-import Graphs from '@/components/sections/Graphs';
-import PDFs from '@/components/sections/PDFs';
-import PreviousSponsors from '@/components/sections/PreviousSponsors';
-import Glimpses from '@/components/sections/Glimpses';
-import SponsorUs from '@/components/sections/SponsorUs';
+
+// Import lightweight components immediately
 import NavigationMenu from '@/components/common/NavigationMenu';
+import StickyNavbar from '@/components/common/StickyNavbar';
 import GlobalVideoBackground from '@/components/common/GlobalVideoBackground';
 import ScrollProgress from '@/components/common/ScrollProgress';
 import SVGCurveLoader from '@/components/animations/SVGCurveLoader';
 import PerspectiveTransition from '@/components/animations/PerspectiveTransition';
 
+// Lazy load heavy sections
+const Hero = dynamic(() => import('@/components/sections/Hero'), { 
+  ssr: true,
+  loading: () => <div className="min-h-screen" />,
+});
+const WhoAreWe = dynamic(() => import('@/components/sections/WhoAreWe'), { 
+  ssr: false,
+});
+const WhyAssociate = dynamic(() => import('@/components/sections/WhyAssociate'), { 
+  ssr: false,
+});
+const SeventyFiveYears = dynamic(() => import('@/components/sections/SeventyFiveYears'), { 
+  ssr: false,
+});
+const Events = dynamic(() => import('@/components/sections/FlagshipEvents'), { 
+  ssr: false,
+});
+const Graphs = dynamic(() => import('@/components/sections/Graphs'), { 
+  ssr: false,
+});
+const PDFs = dynamic(() => import('@/components/sections/PDFs'), { 
+  ssr: false,
+});
+const Team = dynamic(() => import('@/components/sections/Team'), { 
+  ssr: false,
+});
+const PreviousSponsors = dynamic(() => import('@/components/sections/PreviousSponsors'), { 
+  ssr: false,
+});
+const Glimpses = dynamic(() => import('@/components/sections/Glimpses'), { 
+  ssr: false,
+});
+const SponsorUs = dynamic(() => import('@/components/sections/SponsorUs'), { 
+  ssr: false,
+});
+const Footer = dynamic(() => import('@/components/sections/Footer'), { 
+  ssr: false,
+});
+
 export default function Home() {
+  const heroTitleRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
   useEffect(() => {
-    // Initialize Lenis smooth scroll
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  useEffect(() => {
+    // Optimized Lenis with performance settings
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: 1.0, // Reduced from 1.2
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: true,
-      wheelMultiplier: 1,
-      touchMultiplier: 2,
+      wheelMultiplier: 0.8, // Reduced for less aggressive scrolling
+      touchMultiplier: 1.5, // Reduced from 2
       infinite: false,
+      syncTouch: true,
     });
 
+    let rafId: number;
     function raf(time: number) {
       lenis.raf(time);
-      requestAnimationFrame(raf);
+      rafId = requestAnimationFrame(raf);
     }
 
-    requestAnimationFrame(raf);
+    rafId = requestAnimationFrame(raf);
 
     return () => {
+      cancelAnimationFrame(rafId);
       lenis.destroy();
     };
   }, []);
@@ -49,10 +97,16 @@ export default function Home() {
       <GlobalVideoBackground />
       <ScrollProgress />
       <SVGCurveLoader duration={600} delay={500} />
-      <NavigationMenu />
+      
+      {/* Mobile: Side navbar, Desktop: Sticky navbar */}
+      {isMobile ? (
+        <NavigationMenu />
+      ) : (
+        <StickyNavbar heroTitleRef={heroTitleRef} />
+      )}
       
       <PerspectiveTransition>
-        <Hero />
+        <Hero titleRef={heroTitleRef} navbarTitleSlotRef={heroTitleRef} />
       </PerspectiveTransition>
       
       <PerspectiveTransition>
@@ -80,6 +134,10 @@ export default function Home() {
       </PerspectiveTransition>
       
       <PerspectiveTransition>
+        <Team />
+      </PerspectiveTransition>
+      
+      <PerspectiveTransition>
         <PreviousSponsors />
       </PerspectiveTransition>
       
@@ -90,6 +148,8 @@ export default function Home() {
       <PerspectiveTransition>
         <SponsorUs />
       </PerspectiveTransition>
+      
+      <Footer />
     </main>
   );
 }

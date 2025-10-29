@@ -51,7 +51,7 @@ const donutData2 = [
 const CustomTooltip = ({ active, payload }: { active?: boolean, payload?: Array<{ value: number }> }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-black/90 backdrop-blur-md border border-red-500/50 rounded-lg p-3 shadow-2xl shadow-red-500/20">
+      <div className="bg-black/95 border border-red-500/50 rounded-lg p-3 shadow-2xl shadow-red-500/20" style={{ backdropFilter: 'none' }}>
         <p className="text-red-400 font-bold">{`${payload[0].value}`}</p>
       </div>
     );
@@ -130,7 +130,7 @@ export default function Graphs() {
               <h3 className="text-sm font-bold text-white mb-1 text-center relative z-10 group-hover:scale-105 transition-transform duration-300">
                 <span className="text-red-500">Events</span> Distribution
               </h3>
-              <div className="relative flex-1 flex items-center justify-center" style={{ filter: 'drop-shadow(0 0 20px rgba(220, 38, 38, 0.3))' }}>
+              <div className="relative flex-1 flex items-center justify-center">
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
                     <Tooltip content={<CustomTooltip />} />
@@ -151,7 +151,7 @@ export default function Graphs() {
                           onMouseLeave={() => setDonut1Hover(null)}
                           className="chart-cell"
                           style={{ 
-                            filter: donut1Hover === index ? 'drop-shadow(0 10px 20px rgba(220, 38, 38, 0.9))' : 'drop-shadow(0 4px 8px rgba(220, 38, 38, 0.5))',
+                            filter: donut1Hover === index ? 'drop-shadow(0 6px 12px rgba(220, 38, 38, 0.6))' : 'none',
                             transform: donut1Hover === index ? 'scale(1.15) translate(0, -8px)' : 'scale(1) translate(0, 0)',
                             transformOrigin: '50% 50%',
                             cursor: 'pointer',
@@ -179,7 +179,7 @@ export default function Graphs() {
               <h3 className="text-xs font-bold text-white mb-1 text-center relative z-10">
                 <span className="text-red-500">Regional</span> Participation
               </h3>
-              <div className="relative flex-1 flex items-center justify-center" style={{ filter: 'drop-shadow(0 0 20px rgba(220, 38, 38, 0.3))' }}>
+              <div className="relative flex-1 flex items-center justify-center">
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
                     <Tooltip content={<CustomTooltip />} />
@@ -200,7 +200,7 @@ export default function Graphs() {
                           onMouseLeave={() => setDonut2Hover(null)}
                           className="chart-cell"
                           style={{ 
-                            filter: donut2Hover === index ? 'drop-shadow(0 10px 20px rgba(220, 38, 38, 0.9))' : 'drop-shadow(0 4px 8px rgba(220, 38, 38, 0.5))',
+                            filter: donut2Hover === index ? 'drop-shadow(0 6px 12px rgba(220, 38, 38, 0.6))' : 'none',
                             transform: donut2Hover === index ? 'scale(1.15) translate(0, -8px)' : 'scale(1) translate(0, 0)',
                             transformOrigin: '50% 50%',
                             cursor: 'pointer',
@@ -228,7 +228,7 @@ export default function Graphs() {
               <h3 className="text-xs font-bold text-white mb-1 text-center relative z-10">
                 <span className="text-red-500">Kascades</span> Growth
               </h3>
-              <div className="relative flex-1" style={{ filter: 'drop-shadow(0 0 15px rgba(220, 38, 38, 0.3))' }}>
+              <div className="relative flex-1">
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={barChartData1}>
                     <XAxis 
@@ -261,7 +261,7 @@ export default function Graphs() {
                           onMouseLeave={() => setBar1Hover(null)}
                           className="chart-cell"
                           style={{ 
-                            filter: bar1Hover === index ? 'drop-shadow(0 8px 16px rgba(220, 38, 38, 0.9))' : 'drop-shadow(0 4px 8px rgba(220, 38, 38, 0.5))',
+                            filter: bar1Hover === index ? 'drop-shadow(0 6px 12px rgba(220, 38, 38, 0.6))' : 'none',
                             transform: bar1Hover === index ? 'scaleY(1.15) translate(0, -6px)' : 'scaleY(1) translate(0, 0)',
                             transformOrigin: 'bottom center',
                             cursor: 'pointer',
@@ -288,7 +288,7 @@ export default function Graphs() {
               <h3 className="text-sm font-bold text-white mb-1 text-center relative z-10">
                 <span className="text-red-500">Instagram</span> Growth
               </h3>
-              <div className="relative flex-1 flex items-center" style={{ filter: 'drop-shadow(0 0 15px rgba(220, 38, 38, 0.3))' }}>
+              <div className="relative flex-1 flex items-center">
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={barChartData2}>
                     <XAxis 
@@ -321,7 +321,7 @@ export default function Graphs() {
                           onMouseLeave={() => setBar2Hover(null)}
                           className="chart-cell"
                           style={{ 
-                            filter: bar2Hover === index ? 'drop-shadow(0 8px 16px rgba(239, 68, 68, 0.9))' : 'drop-shadow(0 4px 8px rgba(239, 68, 68, 0.5))',
+                            filter: bar2Hover === index ? 'drop-shadow(0 6px 12px rgba(239, 68, 68, 0.6))' : 'none',
                             transform: bar2Hover === index ? 'scaleY(1.15) translate(0, -6px)' : 'scaleY(1) translate(0, 0)',
                             transformOrigin: 'bottom center',
                             cursor: 'pointer',
@@ -348,7 +348,7 @@ export default function Graphs() {
               <h3 className="text-xs font-bold text-white mb-1 text-center relative z-10">
                 <span className="text-red-500">Participants</span> by Category
               </h3>
-              <div className="relative flex-1" style={{ filter: 'drop-shadow(0 0 15px rgba(248, 113, 113, 0.3))' }}>
+              <div className="relative flex-1">
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={barChartData3}>
                     <XAxis 
@@ -381,7 +381,7 @@ export default function Graphs() {
                           onMouseLeave={() => setBar3Hover(null)}
                           className="chart-cell"
                           style={{ 
-                            filter: bar3Hover === index ? 'drop-shadow(0 8px 16px rgba(248, 113, 113, 0.9))' : 'drop-shadow(0 4px 8px rgba(248, 113, 113, 0.5))',
+                            filter: bar3Hover === index ? 'drop-shadow(0 6px 12px rgba(248, 113, 113, 0.6))' : 'none',
                             transform: bar3Hover === index ? 'scaleY(1.15) translate(0, -6px)' : 'scaleY(1) translate(0, 0)',
                             transformOrigin: 'bottom center',
                             cursor: 'pointer',
@@ -408,7 +408,7 @@ export default function Graphs() {
               <h3 className="text-sm font-bold text-white mb-1 text-center relative z-10">
                 <span className="text-red-500">Regional</span> Distribution
               </h3>
-              <div className="relative flex-1" style={{ filter: 'drop-shadow(0 0 15px rgba(220, 38, 38, 0.3))' }}>
+              <div className="relative flex-1">
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={barChartData4}>
                     <XAxis 
@@ -441,7 +441,7 @@ export default function Graphs() {
                           onMouseLeave={() => setBar4Hover(null)}
                           className="chart-cell"
                           style={{ 
-                            filter: bar4Hover === index ? 'drop-shadow(0 8px 16px rgba(220, 38, 38, 0.9))' : 'drop-shadow(0 4px 8px rgba(220, 38, 38, 0.5))',
+                            filter: bar4Hover === index ? 'drop-shadow(0 6px 12px rgba(220, 38, 38, 0.6))' : 'none',
                             transform: bar4Hover === index ? 'scaleY(1.15) translate(0, -6px)' : 'scaleY(1) translate(0, 0)',
                             transformOrigin: 'bottom center',
                             cursor: 'pointer',

@@ -170,3 +170,69 @@ html {
               filter 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: auto;
 }
+
+/* Performance Optimizations */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* GPU acceleration for transforms */
+.motion-safe\:transform-gpu {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Optimize image rendering - but not for SVGs */
+img:not([src*=".svg"]) {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* Sharp SVG rendering for charts */
+svg {
+  shape-rendering: geometricPrecision;
+  text-rendering: geometricPrecision;
+  image-rendering: crisp-edges;
+}
+
+/* Ensure Recharts SVGs are sharp */
+.recharts-wrapper,
+.recharts-surface {
+  shape-rendering: geometricPrecision;
+  text-rendering: optimizeLegibility;
+}
+
+/* Remove any blur from chart containers */
+.recharts-tooltip-wrapper,
+.recharts-legend-wrapper {
+  filter: none !important;
+}
+
+/* Reduce repaints on scroll */
+section {
+  contain: layout style paint;
+}
+
+/* Optimize backdrop filters */
+[class*="backdrop-blur"] {
+  will-change: filter;
+}
+
+/* Optimize transforms */
+[style*="transform"],
+[style*="scale"],
+[style*="opacity"] {
+  will-change: transform, opacity;
+}
+
+/* Content containment for scroll sections */
+.overflow-hidden {
+  contain: layout style paint;
+}
+
+/* Prevent layout shifts */
+video {
+  object-fit: cover;
+  object-position: center;
+}

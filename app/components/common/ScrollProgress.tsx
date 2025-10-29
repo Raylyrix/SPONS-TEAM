@@ -1,27 +1,31 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { motion, useScroll } from 'framer-motion';
 
 export default function ScrollProgress() {
   const [isVisible, setIsVisible] = useState(false);
   const { scrollYProgress } = useScroll();
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsVisible(window.scrollY > 100);
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+  const handleScroll = useCallback(() => {
+    setIsVisible(window.scrollY > 100);
   }, []);
+
+  useEffect(() => {
+    // Use passive listener for better performance
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
 
   return (
     <>
       {/* Scroll Progress Bar */}
       <motion.div
         className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-600 via-red-500 to-red-600 origin-left z-50"
-        style={{ scaleX: scrollYProgress }}
+        style={{ 
+          scaleX: scrollYProgress,
+          willChange: 'transform',
+        }}
       />
 
       {/* Back to Top Button */}
@@ -52,5 +56,3 @@ export default function ScrollProgress() {
     </>
   );
 }
-
-
